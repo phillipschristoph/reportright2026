@@ -1,0 +1,209 @@
+import React, { useRef, useMemo, Suspense } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+
+// Component extracted from the provided threeJsCode
+function ParticleSun() {
+  const pointsRef = useRef();
+  const groupRef = useRef();
+
+  const particleCount = 50000; // Increased number of particles for the sun
+  const sunRadius = 2; // Initial radius of the particle sun
+  const colors = useMemo(() => [
+    new THREE.Color('#FF0000'), // Red
+    new THREE.Color('#FFA500'), // Orange
+    new THREE.Color('#FFFFFF'), // White
+  ], []);
+
+  // Use useMemo to create a circular texture for round points
+  const circleTexture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const context = canvas.getContext('2d');
+    if (context) {
+      context.beginPath();
+      context.arc(32, 32, 30, 0, Math.PI * 2); // Draw a white circle
+      context.fillStyle = '#ffffff';
+      context.fill();
+    }
+    return new THREE.CanvasTexture(canvas);
+  }, []);
+
+  // Use useMemo to create and store particle data once
+  const { positions, initialPositions, initialRadii, randomFactors, particleColors } = useMemo(() => {
+    const positions = new Float32Array(particleCount * 3);
+    const initialPositions = new Float32Array(particleCount * 3); // Store initial positions for animation reference
+    const initialRadii = new Float32Array(particleCount); // Store initial radius for each particle
+    const randomFactors = new Float32Array(particleCount); // Store a random factor for each particle's sine wave animation
+    const particleColors = new Float32Array(particleCount * 3);
+
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+
+      // Generate points on a sphere using spherical coordinates
+      const theta = Math.random() * Math.PI * 2; // azimuthal angle
+      const phi = Math.acos(Math.random() * 2 - 1); // polar angle
+
+      const x = sunRadius * Math.sin(phi) * Math.cos(theta);
+      const y = sunRadius * Math.sin(phi) * Math.sin(theta);
+      const z = sunRadius * Math.cos(phi);
+
+      positions[i3] = x;
+      positions[i3 + 1] = y;
+      positions[i3 + 2] = z;
+
+      // Store initial positions
+      initialPositions[i3] = x;
+      initialPositions[i3 + 1] = y;
+      initialPositions[i3 + 2] = z;
+
+      initialRadii[i] = Math.sqrt(x * x + y * y + z * z); // Calculate and store initial distance from origin
+      randomFactors[i] = Math.random(); // A random value between 0 and 1 for animation offset
+
+      // Assign a random color from the defined palette
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      particleColors[i3] = color.r;
+      particleColors[i3 + 1] = color.g;
+      particleColors[i3 + 2] = color.b;
+    }
+
+    return { positions, initialPositions, initialRadii, randomFactors, particleColors };
+  }, [particleCount, sunRadius, colors]);
+
+  // Animation logic using useFrame
+  useFrame((state) => {
+    if (!pointsRef.current || !groupRef.current) return;
+
+    const positionsArray = pointsRef.current.geometry.attributes.position.array;
+    
+    const time = state.clock.elapsedTime;
+    const pulseAmplitude = 0.2; // How much particles move from their initial radius
+    const pulseSpeed = 2;      // How fast the pulsation occurs
+    const noiseScale = 0.5; // Additional random movement scale for particles at origin
+
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+
+      const x0 = initialPositions[i3];
+      const y0 = initialPositions[i3 + 1];
+      const z0 = initialPositions[i3 + 2];
+
+      const radius = initialRadii[i];
+      const factor = randomFactors[i];
+
+      // Calculate pulsation based on a sine wave, using the randomFactor for individual offsets
+      const offset = Math.sin(time * pulseSpeed + factor * Math.PI * 2) * pulseAmplitude;
+      const newRadius = radius + offset;
+
+      // Update particle position: normalize initial position vector and scale by new radius
+      const currentMagnitude = Math.sqrt(x0 * x0 + y0 * y0 + z0 * z0);
+      if (currentMagnitude > 0.0001) { // Avoid division by zero for particles exactly at origin
+        const normalizedX = x0 / currentMagnitude;
+        const normalizedY = y0 / currentMagnitude;
+        const normalizedZ = z0 / currentMagnitude;
+
+        positionsArray[i3] = normalizedX * newRadius;
+        positionsArray[i3 + 1] = normalizedY * newRadius;
+        positionsArray[i3 + 2] = normalizedZ * newRadius;
+      } else {
+          // If a particle is at the origin, give it a more random sinusoidal movement
+          positionsArray[i3] = Math.sin(time * pulseSpeed + factor * Math.PI * 2) * pulseAmplitude * noiseScale;
+          positionsArray[i3 + 1] = Math.cos(time * pulseSpeed + factor * Math.PI * 2) * pulseAmplitude * noiseScale;
+          positionsArray[i3 + 2] = Math.sin(time * pulseSpeed * 0.7 + factor * Math.PI * 2) * pulseAmplitude * noiseScale;
+      }
+    }
+
+    // Indicate that the position attribute needs to be updated by the GPU
+    pointsRef.current.geometry.attributes.position.needsUpdate = true;
+
+    // Slowly rotate the entire sun group for added dynamism
+    groupRef.current.rotation.y += 0.005;
+    groupRef.current.rotation.x += 0.002;
+  });
+
+  return (
+    <group ref={groupRef}>
+      {/* Ambient light for general scene illumination */}
+      <ambientLight intensity={0.5} />
+      {/* A point light at the center to simulate the sun's core glow */}
+      <pointLight position={[0, 0, 0]} intensity={2} color="#FFFFA0" distance={5} decay={2} />
+
+      <points ref={pointsRef}>
+        <bufferGeometry>
+          {/* Position attribute, marked for dynamic updates */}
+          <bufferAttribute
+            attach="attributes-position"
+            count={positions.length / 3}
+            array={positions}
+            itemSize={3}
+            usage={THREE.DynamicDrawUsage} 
+          />
+          {/* Color attribute */}
+          <bufferAttribute
+            attach="attributes-color"
+            count={particleColors.length / 3}
+            array={particleColors}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        {/* Material for the particles */}
+        <pointsMaterial
+          size={0.02} // Smaller size of each particle
+          vertexColors={true} // Use colors from the bufferAttribute
+          transparent={true}
+          opacity={0.7} // Added opacity
+          map={circleTexture} // Added map for round points using a procedural texture
+          alphaTest={0.01} // Adjusted alphaTest for the circular texture for better blending/cutoff
+          sizeAttenuation={true} // Particles closer to the camera appear larger
+        />
+      </points>
+    </group>
+  );
+}
+
+function App() {
+  const threejsElement = {
+    "id": "43fc9dc0-f76d-4a56-93dc-7a9427609979",
+    "type": "threejs",
+    "x": 380,
+    "y": 80,
+    "width": 960,
+    "height": 600,
+    "backgroundColor": "transparent",
+    "textColor": "#ffffff",
+    "fontSize": 16,
+    "borderRadius": 0
+  };
+
+  return (
+    <div className="relative min-h-screen w-full overflow-hidden bg-gray-900">
+      <div
+        style={{
+          position: 'absolute',
+          left: threejsElement.x + 'px',
+          top: threejsElement.y + 'px',
+          width: threejsElement.width + 'px',
+          height: threejsElement.height + 'px',
+          backgroundColor: threejsElement.backgroundColor,
+          borderRadius: threejsElement.borderRadius + 'px',
+          // textColor and fontSize are not directly applicable to a Three.js canvas container.
+        }}
+      >
+        <Canvas
+          className="w-full h-full"
+          camera={{ fov: 75, near: 0.1, far: 1000, position: [0, 0, 5] }}
+          style={{ background: 'transparent' }} // Ensure the Canvas DOM element background is transparent
+        >
+          {/* Set the Three.js scene background to transparent to allow the outer div's background to show */}
+          <color attach="background" args={['transparent']} />
+          <Suspense fallback={null}>
+            <ParticleSun />
+          </Suspense>
+        </Canvas>
+      </div>
+    </div>
+  );
+}
+
+export default App;

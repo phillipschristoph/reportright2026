@@ -1,0 +1,45 @@
+<section class="bg-[#0C1624] text-white px-6 py-20">
+  <!-- Tabs -->
+  <div class="flex flex-wrap justify-center gap-4 mb-16">
+    <button class="bg-[#F79D64] text-white font-semibold text-base md:text-lg px-8 py-3 rounded-xl shadow-md">
+      Dashboard
+    </button>
+    <button class="bg-[#F2F2F2] text-black font-semibold text-base md:text-lg px-8 py-3 rounded-xl">
+      Budget
+    </button>
+    <button class="bg-[#F2F2F2] text-black font-semibold text-base md:text-lg px-8 py-3 rounded-xl">
+      Planning
+    </button>
+  </div>
+
+  <!-- Content & Image Row -->
+  <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-start gap-10 lg:gap-20">
+    <!-- Text Content -->
+    <div class="w-full lg:w-1/2 text-white">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Dashboard</h2>
+      <p class="text-lg mb-6 text-gray-200">
+        Get a clear and visual overview<br class="hidden md:inline"> of the audit progress.
+      </p>
+      <div class="space-y-6 text-sm md:text-base text-gray-300 leading-relaxed">
+        <p>
+          Instantly see which questions are still outstanding with the client and where action is required.
+        </p>
+        <p>
+          Easily keep track of comments on the financial statements to ensure that nothing is overlooked.
+          With this dashboard, you always have full insight into the status of your audit process.
+        </p>
+        <p>
+          Track the progress of the financial statement audit per phase so you always know where you stand in the process.
+        </p>
+      </div>
+    </div>
+
+    <!-- Image Content -->
+    <div class="w-full lg:w-1/2">
+      <img src="https://i.ibb.co/PZ5pkBjw/image.png" alt="Dashboard" class="rounded-xl w-full h-auto shadow-2xl">
+    </div>
+  </div>
+</section>
+<div class="bg-red-500 text-white p-4 rounded-lg text-center">
+  If you see a red box, Tailwind is working.
+</div>

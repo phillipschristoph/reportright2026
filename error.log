@@ -1,0 +1,29 @@
+[2025-10-28T06:18:57.844292400+00:00] startup: base_url=https://chatgpt.com/backend-api path_style=wham
+[2025-10-28T06:18:57.852401600+00:00] auth: mode=ChatGPT account_id=cd95a773-2681-43cf-8462-ef4f98ab3e0c
+[2025-10-28T06:18:57.855948+00:00] auth: set ChatGPT-Account-Id header: cd95a773-2681-43cf-8462-ef4f98ab3e0c
+[2025-10-28T06:18:57.862935200+00:00] startup: wham_force_internal=false ua=codex_cli_rs/0.50.0 (Windows 10.0.26100; x86_64) vscode/0.45.14 (codex_cloud_tasks_tui)
+[2025-10-28T06:18:57.987179200+00:00] env: git origins: ["https://github.com/cuatrosr/reportright-frontend.git", "https://github.com/phillipschristoph/reportright-frontend.git"]
+[2025-10-28T06:18:57.990402+00:00] env: parsed HTTP GitHub origin => cuatrosr/reportright-frontend
+[2025-10-28T06:18:57.994405+00:00] env: GET https://chatgpt.com/backend-api/wham/environments/by-repo/github/cuatrosr/reportright-frontend
+[2025-10-28T06:18:57.996542400+00:00] env: parsed HTTP GitHub origin => cuatrosr/reportright-frontend
+[2025-10-28T06:18:58.495216700+00:00] http.list_tasks: env=<all> items=9
+[2025-10-28T06:18:58.498591+00:00] refresh.apply: env=<all> count=8
+[2025-10-28T06:18:58.916155900+00:00] env: status=403 Forbidden content-type=application/json
+[2025-10-28T06:18:58.918634800+00:00] env: parsed HTTP GitHub origin => phillipschristoph/reportright-frontend
+[2025-10-28T06:18:58.940306+00:00] env: status=403 Forbidden content-type=application/json
+[2025-10-28T06:18:58.943758500+00:00] env: by-repo fetch failed for cuatrosr/reportright-frontend: GET https://chatgpt.com/backend-api/wham/environments/by-repo/github/cuatrosr/reportright-frontend failed: 403 Forbidden; content-type=application/json; body={"detail":{"type":"repo_not_accessible","message":"Repository is not accessible"}}
+[2025-10-28T06:18:58.946029600+00:00] env: parsed HTTP GitHub origin => phillipschristoph/reportright-frontend
+[2025-10-28T06:18:58.948474400+00:00] env: GET https://chatgpt.com/backend-api/wham/environments/by-repo/github/phillipschristoph/reportright-frontend
+[2025-10-28T06:18:59.704409800+00:00] env: status=200 OK content-type=application/json
+[2025-10-28T06:18:59.707837400+00:00] env: by-repo returned 1 env(s) for phillipschristoph/reportright-frontend
+[2025-10-28T06:18:59.710962+00:00] env: single environment available; selecting it
+[2025-10-28T06:18:59.714528400+00:00] env.select: autodetected id=68e9c014886c81918ac12b698c898368 label=reportright-frontend
+[2025-10-28T06:18:59.730178900+00:00] env: status=200 OK content-type=application/json
+[2025-10-28T06:18:59.760738900+00:00] env: parsed HTTP GitHub origin => cuatrosr/reportright-frontend
+[2025-10-28T06:18:59.956521600+00:00] http.list_tasks: env=68e9c014886c81918ac12b698c898368 items=9
+[2025-10-28T06:18:59.960701900+00:00] refresh.apply: env=68e9c014886c81918ac12b698c898368 count=8
+[2025-10-28T06:18:59.998368+00:00] env: status=200 OK content-type=application/json
+[2025-10-28T06:19:00.327064900+00:00] env: status=403 Forbidden content-type=application/json
+[2025-10-28T06:19:00.332941300+00:00] env: parsed HTTP GitHub origin => phillipschristoph/reportright-frontend
+[2025-10-28T06:19:01.170247500+00:00] env: status=200 OK content-type=application/json
+[2025-10-28T06:19:01.459543200+00:00] env: status=200 OK content-type=application/json
